@@ -1,0 +1,21 @@
+document.documentElement.classList.remove(`no-js`);var e=document.querySelectorAll(`[data-reveal]`);if(`IntersectionObserver`in window&&e.length){let t=new IntersectionObserver(e=>{e.forEach(e=>{e.isIntersecting&&(e.target.classList.add(`is-in`),t.unobserve(e.target))})},{rootMargin:`0px 0px -8% 0px`,threshold:.12});e.forEach(e=>t.observe(e))}else e.forEach(e=>e.classList.add(`is-in`));var t=document.querySelector(`[data-nav]`);if(t){let e=()=>t.classList.toggle(`is-scrolled`,window.scrollY>40);e(),window.addEventListener(`scroll`,e,{passive:!0})}var n=document.querySelector(`[data-menu]`);document.querySelectorAll(`[data-menu-open]`).forEach(e=>e.addEventListener(`click`,()=>n?.showModal())),n?.querySelectorAll(`[data-menu-close], a`).forEach(e=>e.addEventListener(`click`,()=>n.close()));var r=class extends HTMLElement{connectedCallback(){if(this._ready)return;this._ready=!0,this.innerHTML=`
+      <dialog class="lb" aria-label="Photo viewer">
+        <figure class="lb__stage">
+          <img class="lb__img" alt="" decoding="async" />
+          <figcaption class="lb__cap"></figcaption>
+        </figure>
+        <div class="lb__bar glass-ink">
+          <span class="lb__count tabular" aria-live="polite"></span>
+          <div class="lb__actions">
+            <button type="button" class="lb__btn" data-dir="-1" aria-label="Previous photo">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <button type="button" class="lb__btn" data-dir="1" aria-label="Next photo">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+            <button type="button" class="lb__btn" data-close aria-label="Close viewer">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+            </button>
+          </div>
+        </div>
+      </dialog>`,this.dialog=this.querySelector(`dialog`),this.img=this.querySelector(`.lb__img`),this.cap=this.querySelector(`.lb__cap`),this.count=this.querySelector(`.lb__count`),this.items=[],this.index=0,document.addEventListener(`click`,e=>{let t=e.target.closest(`[data-lightbox]`);!t||e.metaKey||e.ctrlKey||e.shiftKey||(e.preventDefault(),this.openFrom(t))}),this.querySelectorAll(`[data-dir]`).forEach(e=>e.addEventListener(`click`,()=>this.go(Number(e.dataset.dir)))),this.querySelector(`[data-close]`).addEventListener(`click`,()=>this.dialog.close()),this.dialog.addEventListener(`click`,e=>{(e.target===this.dialog||e.target.classList.contains(`lb__stage`))&&this.dialog.close()}),this.dialog.addEventListener(`keydown`,e=>{e.key===`ArrowRight`&&(e.preventDefault(),this.go(1)),e.key===`ArrowLeft`&&(e.preventDefault(),this.go(-1))});let e=null;this.dialog.addEventListener(`pointerdown`,t=>{e=t.clientX}),this.dialog.addEventListener(`pointerup`,t=>{if(e===null)return;let n=t.clientX-e;e=null,Math.abs(n)>50&&this.go(n<0?1:-1)})}openFrom(e){let t=e.dataset.lightbox,n=new Set;this.items=[...document.querySelectorAll(`[data-lightbox="${CSS.escape(t)}"]`)].filter(e=>e.dataset.lightboxRole!==`opener`).map(e=>({src:e.getAttribute(`href`),caption:e.dataset.caption||``,alt:e.dataset.alt||e.dataset.caption||``})).filter(e=>!n.has(e.src)&&(n.add(e.src),!0));let r=e.dataset.lightboxRole===`opener`?null:e.getAttribute(`href`);this.index=Math.max(0,r?this.items.findIndex(e=>e.src===r):Number(e.dataset.start||0)),this.show(),this.dialog.showModal()}go(e){this.items.length&&(this.index=(this.index+e+this.items.length)%this.items.length,this.show())}show(){let e=this.items[this.index];e&&(this.img.classList.remove(`is-loaded`),this.img.onload=()=>this.img.classList.add(`is-loaded`),this.img.src=e.src,this.img.alt=e.alt,this.cap.textContent=e.caption,this.count.textContent=`${this.index+1} / ${this.items.length}`,[1,-1].forEach(e=>{let t=this.items[(this.index+e+this.items.length)%this.items.length];if(t){let e=new Image;e.src=t.src}}))}};customElements.get(`photo-lightbox`)||customElements.define(`photo-lightbox`,r);
